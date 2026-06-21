@@ -114,8 +114,15 @@ export default function Header() {
       </div>
 
       {/* Mobile Drawer */}
-      {isOpen && (
-        <div className="mobile-menu animate-mask-reveal">
+      <div 
+        className="mobile-menu"
+        style={{ 
+          opacity: isOpen ? 1 : 0, 
+          pointerEvents: isOpen ? 'auto' : 'none', 
+          transform: isOpen ? 'translateY(0)' : 'translateY(15px)',
+          transition: 'opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
+        }}
+      >
           <div className="container">
           <nav className="mobile-nav">
             {/* About Accordion */}
@@ -191,7 +198,6 @@ export default function Header() {
           </div>
           </div>
         </div>
-      )}
     </header>
   );
 }

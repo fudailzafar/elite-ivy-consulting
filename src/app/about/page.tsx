@@ -79,7 +79,7 @@ export default function About() {
               </p>
             </div>
 
-            <div style={{ paddingLeft: "32px", borderLeft: "3px solid #C1572C", display: "flex", flexDirection: "column" }}>
+            <div className="flex flex-col pl-0 md:pl-8 border-l-0 md:border-l-[3px] border-[#C1572C]">
               <span className="kicker">Core Values</span>
               <h2 className="font-display" style={{ marginBottom: "24px" }}>
                 What Guides Us

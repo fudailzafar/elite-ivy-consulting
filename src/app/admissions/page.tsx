@@ -79,14 +79,26 @@ const stages = [
   },
 ];
 
-const VISIBLE = 3;  // cards visible at once
 const GAP = 24;     // px gap between cards
-const MAX_OFFSET = stages.length - VISIBLE; // 3 — so we can reach card 4, 5, 6
 
 export default function Admissions() {
   const [offset, setOffset] = useState(0);
   const [cardWidth, setCardWidth] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
   const viewportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      setVisibleCount(isMobile ? 1 : 3);
+      setOffset((prev) => Math.min(prev, Math.max(0, stages.length - (isMobile ? 1 : 3))));
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const MAX_OFFSET = Math.max(0, stages.length - visibleCount);
 
   // Measure the clipping viewport so we compute exact pixel shift
   useEffect(() => {
@@ -94,13 +106,13 @@ export default function Admissions() {
       if (!viewportRef.current) return;
       const vw = viewportRef.current.offsetWidth;
       // card width = (container - total gap between visible cards) / visible count
-      setCardWidth((vw - (VISIBLE - 1) * GAP) / VISIBLE);
+      setCardWidth((vw - (visibleCount - 1) * GAP) / visibleCount);
     };
     measure();
     const ro = new ResizeObserver(measure);
     if (viewportRef.current) ro.observe(viewportRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [visibleCount]);
 
   // Each step moves exactly one card width + one gap
   const shift = offset * (cardWidth + GAP);
@@ -203,7 +215,7 @@ export default function Admissions() {
                   key={stage.num}
                   style={{
                     // Shrink to exact measured pixel width so math is always correct
-                    flex: `0 0 ${cardWidth > 0 ? `${cardWidth}px` : `calc((100% - ${(VISIBLE - 1) * GAP}px) / ${VISIBLE})`}`,
+                    flex: `0 0 ${cardWidth > 0 ? `${cardWidth}px` : `calc((100% - ${(visibleCount - 1) * GAP}px) / ${visibleCount})`}`,
                     // parchment card bg from design system; brass top border (like process-card)
                     background: "#FAF7F0",
                     borderTop: "2px solid #A8823C",
